@@ -1,0 +1,75 @@
+use strict;
+use Test::More;
+use Regexp::Grammars;
+use DBIx::Class::Machina;
+use DBIx::Class::Machina::Syntax;
+use DBIx::Class::Machina::Handler;
+use Safe::Isa;
+use File::Temp;
+use Path::Tiny;
+use Kavorka;
+
+
+# Some lines in the header
+
+# Some lines before
+# the input
+my($mach, $handler, $dir) = setup_environment();
+$handler->handle_command(command_for('new table Books'));
+$handler->handle_command(command_for('on Books'));
+$handler->handle_command(command_for('add book_id primary_auto'));
+# Some lines in between
+is(slurped($mach->package_to_path($line)), slurped('/compare/test_1_1/Schema/Candy.pm'), 'Test test_1_1 on row 3 in test-1.mach');
+is(slurped($mach->package_to_path($line)), slurped('/compare/test_1_1/Schema/Result/Books.pm'), 'Test test_1_1 on row 3 in test-1.mach');
+# And some lines after
+
+# Some other lines
+# before another test
+my($mach, $handler, $dir) = setup_environment();
+$handler->handle_command(command_for('new table Authors'));
+$handler->handle_command(command_for('on Authors'));
+$handler->handle_command(command_for('add author_id primary_auto'));
+# Some different lines
+# in between
+is(slurped($mach->package_to_path($line)), slurped('/compare/test_1_2/Schema.pm'), 'Test test_1_2 on row 18 in test-1.mach');
+is(slurped($mach->package_to_path($line)), slurped('/compare/test_1_2/Schema/Result/Authors.pm'), 'Test test_1_2 on row 18 in test-1.mach');
+# And some lines after
+# the output
+
+done_testing();
+
+sub logger {
+    warn 'in the foot';
+}
+sub setup_environment {
+    my $dir = File::Temp->newdir;
+    warn 'Create temp dir ' . $dir->dirname;
+    my $basepath = path($dir->dirname)->child('lib/Our/Machina/Test');
+    $basepath->mkpath;
+    my $mach = DBIx::Class::Machina->new(base_path => Path::Tiny->new($basepath->absolute), namespace => 'Our::Machina::Test::Schema');
+    $mach->create_environment_at_basepath;
+    my $handler = DBIx::Class::Machina::Handler->new(mach => $mach);
+
+    return($mach, $handler, $dir);
+}
+
+sub outfile {
+    my $path = shift;
+    warn path($path)->slurp;
+}
+
+sub command_for {
+    my $regexp = shift;
+    my $matches = ($regexp =~ $grammar);
+    my $result = $matches ? \%/ : undef;
+    return $result->{'FromClient'}->Command;
+}
+
+sub out {
+    my($sample, $grammar);
+    print 'x' x 50;
+    if($sample =~ $grammar) {
+        print '--------------------------' x 20;
+        print Dumper \%/;
+    }
+}

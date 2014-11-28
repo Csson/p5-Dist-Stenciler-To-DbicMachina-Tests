@@ -1,38 +1,39 @@
-Some lines in the header
+# Some lines in the header
 
 ==test==
-Some lines before
-the input
+# Some lines before
+# the input
 --input--
 new table Books
 on Books
 add book_id primary_auto
 --input--
-Some lines in between
+# Some lines in between
 --output--
-The expected output
+Schema::Candy
+Schema::Result::Books
 --output--
-And some lines after
+# And some lines after
 
 ==test==
-Some other lines
-before another test
+# Some other lines
+# before another test
 --input--
 new table Authors
 on Authors
 add author_id primary_auto
 --input--
-Some different lines
-in between
+# Some different lines
+# in between
 --output--
-
-The expected output
-goes here
-
+Schema
+Schema::Result::Authors
 --output--
-And some lines after
-the output
+# And some lines after
+# the output
 
 ==footer==
-'Tis at the end
-yes?
+
+sub logger {
+    warn 'in the foot';
+}
