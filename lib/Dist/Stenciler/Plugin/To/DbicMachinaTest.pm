@@ -1,8 +1,9 @@
-use Moops;
+#use Moops;
 
-class Dist::Stenciler::To::DbicMachinaTest using Moose {
+package Dist::Stenciler::Plugin::To::DbicMachinaTest  {
 
     use Moose::Role;
+    use Kavorka;
 
     method to_dbic_machina_test {
         my $basename = $self->_get_basename;
@@ -30,7 +31,7 @@ class Dist::Stenciler::To::DbicMachinaTest using Moose {
                                         "/compare/@{[ $stencil->name ]}/$path",
                                         $stencil->name,
                                         $stencil->start_line,
-                                        $self->get_filename; 
+                                        $self->get_filename;
             }
 
             push @parsed => $stencil->all_lines_after_output;
