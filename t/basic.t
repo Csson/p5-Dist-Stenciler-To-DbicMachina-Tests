@@ -1,14 +1,11 @@
 use strict;
 use Test::More;
 use Dist::Stenciler;
-#use Dist::Stenciler::To::DbicMachinaTest;
+use Path::Tiny;
 
-my $parser = Dist::Stenciler->new(path => 'corpus/test-1.mach', to => ['DbicMachinaTest']);
+my $parser = Dist::Stenciler->new(path => 'corpus/test-1.mach', to => 'DbicMachina::Tests');
+my $expected = path('corpus/test-1.expected')->slurp;
 
-is(expected(), $parser->to_dbic_machina_test, 'Creates correct tests');
+is($parser->to_dbic_machina_test, $expected, 'Creates correct tests');
 
 done_testing;
-
-sub expected {
-    return q{};
-}
